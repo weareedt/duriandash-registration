@@ -16,27 +16,47 @@
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
     <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
-        <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Register Now!</h1>
+        <h1 class="text-3xl font-bold text-center mb-6 />text-gray-800">Durian Dash</h1>
 
         <form id="registrationForm" class="space-y-6">
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                <input type="text" id="name" name="name" placeholder="John Doe" required
+                <input type="text" id="name" name="name" placeholder="Ali bin Abu" required
                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition duration-150 ease-in-out">
             </div>
 
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                <input type="email" id="email" name="email" placeholder="john.doe@example.com" required
+                <input type="email" id="email" name="email" placeholder="ali.abu@abc.com" required
                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition duration-150 ease-in-out">
             </div>
 
-            <div class="flex items-center">
-                <input type="checkbox" id="consent" name="consent" required
-                       class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded-sm">
-                <label for="consent" class="ml-2 block text-sm text-gray-900 select-none">
-                    I consent to the processing of my data and acknowledge the terms.
-                </label>
+            <div>
+                <label for="contactNumber" class="block text-sm font-medium text-gray-700 mb-1">Contact Number (Malaysia)</label>
+                <div class="flex">
+                    <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                        +60
+                    </span>
+                    <input type="tel" id="contactNumber" name="contactNumber" placeholder="123456789" required
+                           pattern="[0-9]{7,12}" maxlength="12" inputmode="numeric"
+                           oninvalid="this.setCustomValidity('Please enter a valid Malaysian number (numbers only, max 12 digits).')"
+                           oninput="this.setCustomValidity('')"
+                           class="flex-1 px-4 py-2 border border-gray-300 rounded-r-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition duration-150 ease-in-out">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Privacy Consent Statement</label>
+                <div class="bg-gray-100 border border-gray-300 rounded-md p-3 text-sm text-gray-700 mb-3">
+                    I consent to the collection, processing, and use of my personal data by Adticles Sdn Bhd for purposes including service provision, communication, and compliance with legal obligations, in accordance with the Malaysian Personal Data Protection Act 2010 and the terms set out in the Privacy Policy.
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="consent" name="consent" required
+                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded-sm">
+                    <label for="consent" class="ml-2 block text-sm text-gray-900 select-none">
+                        I agree to the Privacy Consent Statement
+                    </label>
+                </div>
             </div>
 
             <button type="submit" id="registerButton"
@@ -58,12 +78,13 @@
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
         // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBI4toUs3lP3Vj87elt24mdvGwLaM-CMwc",
             authDomain: "durian-runtuh-mr.firebaseapp.com",
+            databaseURL: "https://durian-runtuh-mr-default-rtdb.asia-southeast1.firebasedatabase.app/",
             projectId: "durian-runtuh-mr",
             storageBucket: "durian-runtuh-mr.firebasestorage.app",
             messagingSenderId: "402598864719",
@@ -71,15 +92,8 @@
             measurementId: "G-HXXP9H0NBP"
         };
 
-        console.log("Firebase Configuration used:", firebaseConfig);
-
-        // This appId is from the environment and is generally used for organizing data specific to this app
-        // However, it is not used in the Firestore path as per your request to shorten it.
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
         let app;
         let db;
-        // Generate a unique session ID for each form submission/session
         let sessionId = crypto.randomUUID();
 
         const registrationForm = document.getElementById('registrationForm');
@@ -87,33 +101,23 @@
         const messageText = document.getElementById('messageText');
         const registerButton = document.getElementById('registerButton');
 
-        /**
-         * Initializes Firebase.
-         */
         async function initializeFirebase() {
             try {
-                // Initialize Firebase app if not already initialized
                 if (!app) {
                     app = initializeApp(firebaseConfig);
-                    db = getFirestore(app);
-                    console.log("Firestore initialized. Session ID for this submission:", sessionId);
+                    db = getDatabase(app);
+                    console.log("Realtime Database initialized. Session ID for this submission:", sessionId);
                 }
             } catch (error) {
                 console.error("Error initializing Firebase:", error);
                 showMessage('Error initializing Firebase. Check console for details.', 'error');
-                registerButton.disabled = true; // Keep button disabled on error
+                registerButton.disabled = true;
             }
         }
 
-        /**
-         * Displays a message in the message box.
-         * @param {string} message - The message to display.
-         * @param {'success'|'error'} type - The type of message (determines color).
-         */
         function showMessage(message, type) {
             messageText.textContent = message;
             messageBox.classList.remove('hidden', 'bg-green-100', 'border-green-400', 'text-green-700', 'bg-red-100', 'border-red-400', 'text-red-700');
-
             if (type === 'success') {
                 messageBox.classList.add('bg-green-100', 'border-green-400', 'text-green-700');
             } else if (type === 'error') {
@@ -122,64 +126,50 @@
             messageBox.classList.remove('hidden');
         }
 
-        /**
-         * Generates a random 4-digit string.
-         * @returns {string} A 4-digit number as a string.
-         */
         function generateRandom4DigitCode() {
             return Math.floor(1000 + Math.random() * 9000).toString();
         }
 
-        /**
-         * Saves registration data to Firestore.
-         * @param {Object} data - The data to save (name, email, consent).
-         */
-        async function saveRegistrationToFirestore(data) {
+        // Save registration data to Realtime Database
+        async function saveRegistrationToRealtimeDB(data) {
             if (!db) {
-                console.error("Firestore not initialized.");
+                console.error("Realtime Database not initialized.");
                 showMessage('Error: Database not ready. Please try again.', 'error');
                 return;
             }
-
             try {
                 let fourDigitCode = generateRandom4DigitCode();
-                // Corrected Firestore path: 'registration' is the collection, fourDigitCode is the document ID
-                const docRef = doc(db, 'registration', fourDigitCode);
+                const regRef = ref(db, 'registration/' + fourDigitCode);
 
-                // Check if document with this ID already exists
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    console.warn(`Collision detected for ID ${fourDigitCode}. This ID already exists. Overwriting existing data.`);
+                // Check if this code already exists
+                const snapshot = await get(regRef);
+                if (snapshot.exists()) {
                     showMessage(`Warning: The generated ID ${fourDigitCode} already exists. Overwriting data. Please consider refreshing and trying again for a new ID.`, 'error');
                 }
 
-                await setDoc(docRef, { // Use setDoc for custom ID
+                await set(regRef, {
                     name: data.name,
                     email: data.email,
+                    contactNumber: data.contactNumber,
                     consent: data.consent,
-                    timestamp: new Date(),
-                    sessionId: sessionId // Include the session ID for tracking
+                    timestamp: new Date().toISOString(),
+                    sessionId: sessionId
                 });
-                showMessage('Registration submitted successfully to Firestore! Document ID: ' + fourDigitCode, 'success');
-                console.log('Registration data saved to Firestore with ID:', fourDigitCode);
-                registrationForm.reset(); // Clear form fields on success
+                showMessage('Registration submitted successfully to Realtime Database! Document ID: ' + fourDigitCode, 'success');
+                registrationForm.reset();
             } catch (e) {
                 console.error("Error adding document: ", e);
-                // Provide a specific message about security rules if permission denied
-                if (e.code === 'permission-denied') {
-                    showMessage('Error: Permission denied. Please check your Firestore security rules to allow unauthenticated writes to "/registration".', 'error');
-                } else {
-                    showMessage('Error saving registration. Check console for details.', 'error');
-                }
+                showMessage('Error saving registration. Check console for details.', 'error');
             }
         }
 
         // Add event listener for the form submission
         registrationForm.addEventListener('submit', async function(event) {
-            event.preventDefault(); // Prevent default form submission
-            await saveRegistrationToFirestore({
+            event.preventDefault();
+            await saveRegistrationToRealtimeDB({
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
+                contactNumber: '+60' + document.getElementById('contactNumber').value,
                 consent: document.getElementById('consent').checked
             });
         });
