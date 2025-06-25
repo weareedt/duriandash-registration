@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+        <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Register Now!</h1>
+
+        <form id="registrationForm" class="space-y-6">
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="John Doe" required
+                       class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition duration-150 ease-in-out">
+            </div>
+
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="john.doe@example.com" required
+                       class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition duration-150 ease-in-out">
+            </div>
+
+            <div class="flex items-center">
+                <input type="checkbox" id="consent" name="consent" required
+                       class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded-sm">
+                <label for="consent" class="ml-2 block text-sm text-gray-900 select-none">
+                    I consent to the processing of my data and acknowledge the terms.
+                </label>
+            </div>
+
+            <button type="submit" id="registerButton"
+                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out transform hover:scale-105">
+                Register
+            </button>
+        </form>
+
+        <!-- Message box for form submission and errors -->
+        <div id="messageBox" class="hidden mt-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md relative" role="alert">
+            <strong class="font-bold">Success!</strong>
+            <span class="block sm:inline" id="messageText">Registration submitted successfully.</span>
+            <span class="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer" onclick="document.getElementById('messageBox').classList.add('hidden')">
+                <svg class="fill-current h-6 w-6 text-green-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.15a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+            </span>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBI4toUs3lP3Vj87elt24mdvGwLaM-CMwc",
+            authDomain: "durian-runtuh-mr.firebaseapp.com",
+            projectId: "durian-runtuh-mr",
+            storageBucket: "durian-runtuh-mr.firebasestorage.app",
+            messagingSenderId: "402598864719",
+            appId: "1:402598864719:web:823fe9ceea1658f9c1073a",
+            measurementId: "G-HXXP9H0NBP"
+        };
+
+        console.log("Firebase Configuration used:", firebaseConfig);
+
+        // This appId is from the environment and is generally used for organizing data specific to this app
+        // However, it is not used in the Firestore path as per your request to shorten it.
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        let app;
+        let db;
+        // Generate a unique session ID for each form submission/session
+        let sessionId = crypto.randomUUID();
+
+        const registrationForm = document.getElementById('registrationForm');
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+        const registerButton = document.getElementById('registerButton');
+
+        /**
+         * Initializes Firebase.
+         */
+        async function initializeFirebase() {
+            try {
+                // Initialize Firebase app if not already initialized
+                if (!app) {
+                    app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    console.log("Firestore initialized. Session ID for this submission:", sessionId);
+                }
+            } catch (error) {
+                console.error("Error initializing Firebase:", error);
+                showMessage('Error initializing Firebase. Check console for details.', 'error');
+                registerButton.disabled = true; // Keep button disabled on error
+            }
+        }
+
+        /**
+         * Displays a message in the message box.
+         * @param {string} message - The message to display.
+         * @param {'success'|'error'} type - The type of message (determines color).
+         */
+        function showMessage(message, type) {
+            messageText.textContent = message;
+            messageBox.classList.remove('hidden', 'bg-green-100', 'border-green-400', 'text-green-700', 'bg-red-100', 'border-red-400', 'text-red-700');
+
+            if (type === 'success') {
+                messageBox.classList.add('bg-green-100', 'border-green-400', 'text-green-700');
+            } else if (type === 'error') {
+                messageBox.classList.add('bg-red-100', 'border-red-400', 'text-red-700');
+            }
+            messageBox.classList.remove('hidden');
+        }
+
+        /**
+         * Generates a random 4-digit string.
+         * @returns {string} A 4-digit number as a string.
+         */
+        function generateRandom4DigitCode() {
+            return Math.floor(1000 + Math.random() * 9000).toString();
+        }
+
+        /**
+         * Saves registration data to Firestore.
+         * @param {Object} data - The data to save (name, email, consent).
+         */
+        async function saveRegistrationToFirestore(data) {
+            if (!db) {
+                console.error("Firestore not initialized.");
+                showMessage('Error: Database not ready. Please try again.', 'error');
+                return;
+            }
+
+            try {
+                let fourDigitCode = generateRandom4DigitCode();
+                // Corrected Firestore path: 'registration' is the collection, fourDigitCode is the document ID
+                const docRef = doc(db, 'registration', fourDigitCode);
+
+                // Check if document with this ID already exists
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    console.warn(`Collision detected for ID ${fourDigitCode}. This ID already exists. Overwriting existing data.`);
+                    showMessage(`Warning: The generated ID ${fourDigitCode} already exists. Overwriting data. Please consider refreshing and trying again for a new ID.`, 'error');
+                }
+
+                await setDoc(docRef, { // Use setDoc for custom ID
+                    name: data.name,
+                    email: data.email,
+                    consent: data.consent,
+                    timestamp: new Date(),
+                    sessionId: sessionId // Include the session ID for tracking
+                });
+                showMessage('Registration submitted successfully to Firestore! Document ID: ' + fourDigitCode, 'success');
+                console.log('Registration data saved to Firestore with ID:', fourDigitCode);
+                registrationForm.reset(); // Clear form fields on success
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                // Provide a specific message about security rules if permission denied
+                if (e.code === 'permission-denied') {
+                    showMessage('Error: Permission denied. Please check your Firestore security rules to allow unauthenticated writes to "/registration".', 'error');
+                } else {
+                    showMessage('Error saving registration. Check console for details.', 'error');
+                }
+            }
+        }
+
+        // Add event listener for the form submission
+        registrationForm.addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+            await saveRegistrationToFirestore({
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                consent: document.getElementById('consent').checked
+            });
+        });
+
+        // Initialize Firebase when the window loads
+        window.onload = initializeFirebase;
+    </script>
+</body>
+</html>
