@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,77 +11,106 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* Light gray background */
+            background-color: #f3f4f6;
+            /* Light gray background */
         }
     </style>
 </head>
+
 <body class="flex items-center justify-center min-h-screen p-4">
     <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
-        <h1 class="text-3xl font-bold text-center mb-6 />text-gray-800">Durian Dash</h1>
+        <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Durian Dash</h1>
 
-        <form id="registrationForm" class="space-y-6">
+        <div id="codeSection" class="space-y-4">
+            <div>
+                <label for="sessionCode" class="block text-sm font-medium text-gray-700 mb-1">Enter Your Code</label>
+                <input type="text" id="sessionCode" name="sessionCode" placeholder="123456" required
+                    class="w-full text-center tracking-widest text-lg px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <button id="findScoreButton"
+                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Find My Score
+            </button>
+        </div>
+
+        <form id="registrationForm" class="hidden space-y-6">
+            <div>
+                <label for="score" class="block text-sm font-medium text-gray-700 mb-1">Your Score</label>
+                <input type="number" id="score" name="score" readonly
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-100">
+            </div>
+
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                <input type="text" id="username" name="username" placeholder="Username" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                <input type="text" id="name" name="name" placeholder="Ali bin Abu" required
-                       class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition duration-150 ease-in-out">
+                <input type="text" id="name" name="name" placeholder="First Last" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition duration-150 ease-in-out">
             </div>
-
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                <input type="email" id="email" name="email" placeholder="ali.abu@abc.com" required
-                       class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition duration-150 ease-in-out">
+                <input type="email" id="email" name="email" placeholder="name@example.com" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition duration-150 ease-in-out">
             </div>
-
             <div>
-                <label for="contactNumber" class="block text-sm font-medium text-gray-700 mb-1">Contact Number (Malaysia)</label>
+                <label for="contactNumber" class="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
                 <div class="flex">
-                    <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-                        +60
-                    </span>
+                    <span
+                        class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">+60</span>
                     <input type="tel" id="contactNumber" name="contactNumber" placeholder="123456789" required
-                           pattern="[0-9]{7,12}" maxlength="12" inputmode="numeric"
-                           oninvalid="this.setCustomValidity('Please enter a valid Malaysian number (numbers only, max 12 digits).')"
-                           oninput="this.setCustomValidity('')"
-                           class="flex-1 px-4 py-2 border border-gray-300 rounded-r-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition duration-150 ease-in-out">
+                        pattern="[0-9]{7,12}" maxlength="12" inputmode="numeric"
+                        class="flex-1 px-4 py-2 border border-gray-300 rounded-r-md focus:ring-indigo-500 focus:border-indigo-500">
                 </div>
             </div>
-
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Privacy Consent Statement</label>
                 <div class="bg-gray-100 border border-gray-300 rounded-md p-3 text-sm text-gray-700 mb-3">
-                    I consent to the collection, processing, and use of my personal data by Adticles Sdn Bhd for purposes including service provision, communication, and compliance with legal obligations, in accordance with the Malaysian Personal Data Protection Act 2010 and the terms set out in the Privacy Policy.
+                    I consent to the collection, processing, and use of my personal data by Adticles Sdn Bhd for
+                    purposes including service provision, communication, and compliance with legal obligations, in
+                    accordance with the Malaysian Personal Data Protection Act 2010 and the terms set out in the Privacy
+                    Policy.
                 </div>
                 <div class="flex items-center">
                     <input type="checkbox" id="consent" name="consent" required
-                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded-sm">
-                    <label for="consent" class="ml-2 block text-sm text-gray-900 select-none">
-                        I agree to the Privacy Consent Statement
-                    </label>
+                        class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded-sm">
+                    <label for="consent" class="ml-2 block text-sm text-gray-900 select-none">I agree to the Privacy
+                        Consent Statement</label>
                 </div>
             </div>
 
+
             <button type="submit" id="registerButton"
-                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out transform hover:scale-105">
+                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700">
                 Register
             </button>
         </form>
 
-        <!-- Message box for form submission and errors -->
-        <div id="messageBox" class="hidden mt-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md relative" role="alert">
-            <strong class="font-bold">Success!</strong>
-            <span class="block sm:inline" id="messageText">Registration submitted successfully.</span>
-            <span class="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer" onclick="document.getElementById('messageBox').classList.add('hidden')">
-                <svg class="fill-current h-6 w-6 text-green-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.15a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
-            </span>
+        <div id="messageBox" class="hidden mt-6"></div>
+    </div>
+
+    <!-- Add this modal dialog just before the closing </body> tag -->
+    <div id="overwriteModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
+            <h2 class="text-lg font-semibold mb-4 text-gray-800">Username Exists</h2>
+            <p class="mb-6 text-gray-700">The username you entered already exists. Do you want to overwrite the existing
+                registration?</p>
+            <div class="flex justify-end space-x-3">
+                <button id="cancelOverwrite"
+                    class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-800">Cancel</button>
+                <button id="confirmOverwrite"
+                    class="px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white">Overwrite</button>
+            </div>
         </div>
     </div>
 
     <script type="module">
-        // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-        // Firebase configuration
+        // ... (your firebaseConfig remains the same)
         const firebaseConfig = {
             apiKey: "AIzaSyBI4toUs3lP3Vj87elt24mdvGwLaM-CMwc",
             authDomain: "durian-runtuh-mr.firebaseapp.com",
@@ -92,90 +122,91 @@
             measurementId: "G-HXXP9H0NBP"
         };
 
-        let app;
         let db;
-        let sessionId = crypto.randomUUID();
+        let activeCode = null; // Store the code being used
 
+        // HTML Element References
+        const codeSection = document.getElementById('codeSection');
         const registrationForm = document.getElementById('registrationForm');
+        const findScoreButton = document.getElementById('findScoreButton');
+        const sessionCodeInput = document.getElementById('sessionCode');
+        const scoreInput = document.getElementById('score');
         const messageBox = document.getElementById('messageBox');
-        const messageText = document.getElementById('messageText');
-        const registerButton = document.getElementById('registerButton');
-
-        async function initializeFirebase() {
-            try {
-                if (!app) {
-                    app = initializeApp(firebaseConfig);
-                    db = getDatabase(app);
-                    console.log("Realtime Database initialized. Session ID for this submission:", sessionId);
-                }
-            } catch (error) {
-                console.error("Error initializing Firebase:", error);
-                showMessage('Error initializing Firebase. Check console for details.', 'error');
-                registerButton.disabled = true;
-            }
-        }
 
         function showMessage(message, type) {
-            messageText.textContent = message;
-            messageBox.classList.remove('hidden', 'bg-green-100', 'border-green-400', 'text-green-700', 'bg-red-100', 'border-red-400', 'text-red-700');
-            if (type === 'success') {
-                messageBox.classList.add('bg-green-100', 'border-green-400', 'text-green-700');
-            } else if (type === 'error') {
-                messageBox.classList.add('bg-red-100', 'border-red-400', 'text-red-700');
-            }
+            // A helper to show messages
+            messageBox.innerHTML = `<div class="bg-${type === 'success' ? 'green' : 'red'}-100 border border-${type === 'success' ? 'green' : 'red'}-400 text-${type === 'success' ? 'green' : 'red'}-700 px-4 py-3 rounded-md">${message}</div>`;
             messageBox.classList.remove('hidden');
         }
 
-        function generateRandom4DigitCode() {
-            return Math.floor(1000 + Math.random() * 9000).toString();
-        }
-
-        // Save registration data to Realtime Database
-        async function saveRegistrationToRealtimeDB(data) {
-            if (!db) {
-                console.error("Realtime Database not initialized.");
-                showMessage('Error: Database not ready. Please try again.', 'error');
+        findScoreButton.addEventListener('click', async () => {
+            const code = sessionCodeInput.value.trim();
+            if (!code) {
+                showMessage('Please enter a code.', 'error');
                 return;
             }
-            try {
-                let fourDigitCode = generateRandom4DigitCode();
-                const regRef = ref(db, 'registration/' + fourDigitCode);
 
-                // Check if this code already exists
-                const snapshot = await get(regRef);
-                if (snapshot.exists()) {
-                    showMessage(`Warning: The generated ID ${fourDigitCode} already exists. Overwriting data. Please consider refreshing and trying again for a new ID.`, 'error');
-                }
+            const scoreRef = ref(db, `pendingScores/${code}`);
+            const snapshot = await get(scoreRef);
 
-                await set(regRef, {
-                    name: data.name,
-                    email: data.email,
-                    contactNumber: data.contactNumber,
-                    consent: data.consent,
-                    timestamp: new Date().toISOString(),
-                    sessionId: sessionId
-                });
-                showMessage('Registration submitted successfully to Realtime Database! Document ID: ' + fourDigitCode, 'success');
-                registrationForm.reset();
-            } catch (e) {
-                console.error("Error adding document: ", e);
-                showMessage('Error saving registration. Check console for details.', 'error');
+            if (!snapshot.exists()) {
+                showMessage('Code not found. Please check the code and try again.', 'error');
+                return;
             }
-        }
 
-        // Add event listener for the form submission
-        registrationForm.addEventListener('submit', async function(event) {
+            const data = snapshot.val();
+            if (data.claimed) {
+                showMessage('This code has already been used.', 'error');
+                return;
+            }
+
+            // Success!
+            activeCode = code;
+            scoreInput.value = data.score;
+            showMessage('Score found! Please fill in your details.', 'success');
+
+            // Hide the code section and show the registration form
+            codeSection.classList.add('hidden');
+            registrationForm.classList.remove('hidden');
+        });
+
+        registrationForm.addEventListener('submit', async (event) => {
             event.preventDefault();
-            await saveRegistrationToRealtimeDB({
+
+            const registrationData = {
+                username: document.getElementById('username').value,
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
                 contactNumber: '+60' + document.getElementById('contactNumber').value,
-                consent: document.getElementById('consent').checked
-            });
+                score: scoreInput.value,
+                consent: document.getElementById('consent').checked,
+                timestamp: new Date().toISOString(),
+                sessionCode: activeCode
+            };
+
+            // 1. Save the final registration data
+            const regRef = ref(db, `registration/${registrationData.username}`);
+            await set(regRef, registrationData);
+
+            // 2. Mark the pending score as claimed to prevent reuse
+            const pendingRef = ref(db, `pendingScores/${activeCode}`);
+            await update(pendingRef, { claimed: true });
+
+            // 3. Show success and reset the page
+            showMessage('Registration successful!', 'success');
+            registrationForm.classList.add('hidden');
+            codeSection.classList.remove('hidden');
+            registrationForm.reset();
+            sessionCodeInput.value = '';
         });
 
-        // Initialize Firebase when the window loads
-        window.onload = initializeFirebase;
+        // Initialize Firebase
+        (async function () {
+            const app = initializeApp(firebaseConfig);
+            db = getDatabase(app);
+            console.log("Firebase Initialized.");
+        })();
     </script>
 </body>
+
 </html>
