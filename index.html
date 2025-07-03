@@ -187,15 +187,35 @@
                 sessionCode: activeCode
             };
 
-            // 1. Save the final registration data
             const regRef = ref(db, `registration/${registrationData.username}`);
+            const snapshot = await get(regRef);
+
+            if (snapshot.exists()) {
+                // Username exists, show overwrite dialog
+                document.getElementById('overwriteModal').classList.remove('hidden');
+
+                // Handle confirm/cancel
+                document.getElementById('confirmOverwrite').onclick = async () => {
+                    document.getElementById('overwriteModal').classList.add('hidden');
+                    await set(regRef, registrationData);
+                    const pendingRef = ref(db, `pendingScores/${activeCode}`);
+                    await set(pendingRef, null);
+                    showMessage('Registration overwritten successfully!', 'success');
+                    registrationForm.classList.add('hidden');
+                    codeSection.classList.remove('hidden');
+                    registrationForm.reset();
+                    sessionCodeInput.value = '';
+                };
+                document.getElementById('cancelOverwrite').onclick = () => {
+                    document.getElementById('overwriteModal').classList.add('hidden');
+                };
+                return;
+            }
+
+            // Username does not exist, proceed as normal
             await set(regRef, registrationData);
-
-            // 2. Mark the pending score as claimed to prevent reuse
             const pendingRef = ref(db, `pendingScores/${activeCode}`);
-            await update(pendingRef, { claimed: true });
-
-            // 3. Show success and reset the page
+            await set(pendingRef, null);
             showMessage('Registration successful!', 'success');
             registrationForm.classList.add('hidden');
             codeSection.classList.remove('hidden');
